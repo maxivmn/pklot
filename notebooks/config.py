@@ -9,6 +9,6 @@ VAL = "val"
 INPUT_HEIGHT = 128
 INPUT_WIDTH = 128
 # set the batch size and validation data split
-BATCH_SIZE = 8
+BATCH_SIZE = 32
 VAL_SPLIT = 0.1
 TEST_SPLIT = 0.2
