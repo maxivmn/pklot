@@ -1,0 +1,18 @@
+artifact_path: mobile_net_v2_sunny_datasets
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.11.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.1.2
+mlflow_version: 2.4.1
+model_uuid: d052e1df216444f7ab53901666d58fa2
+run_id: 1c5db582beec4ff298d3065f1dcc83e0
+utc_time_created: '2024-01-17 10:46:52.878558'

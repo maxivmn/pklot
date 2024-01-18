@@ -1,0 +1,18 @@
+artifact_path: squeezenet1_sunny_datasets
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.11.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.1.2
+mlflow_version: 2.4.1
+model_uuid: 3debb77104b9442180c8b61262e78b93
+run_id: 546fbaefeab44937828784a8064fdc49
+utc_time_created: '2024-01-17 10:14:50.378593'
