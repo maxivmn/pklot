@@ -133,6 +133,8 @@ data/*
 models/*
 mlruns
 models/*
+datasets/
+runs/
 
 #config file has sensitive data
 .mlflow_uri
