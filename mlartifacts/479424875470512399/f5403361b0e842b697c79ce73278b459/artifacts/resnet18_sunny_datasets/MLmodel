@@ -1,0 +1,18 @@
+artifact_path: resnet18_sunny_datasets
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.11.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.1.2
+mlflow_version: 2.4.1
+model_uuid: a9e814a9a4d94cfb9ed117d240566f24
+run_id: f5403361b0e842b697c79ce73278b459
+utc_time_created: '2024-01-23 10:58:57.920220'
