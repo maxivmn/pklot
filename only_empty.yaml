@@ -1,6 +1,6 @@
-train: ../ds_empty_only/train/images
-val: ../ds_empty_only/val/images
-test: ../ds_empty_only/test/images
+train: ../ds_empty_all_sunny/train/images
+val: ../ds_empty_all_sunny/val/images
+test: ../ds_empty_all_sunny/test/images
 
 nc: 1
 names: ['empty_carlot']
