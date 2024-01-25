@@ -1,3 +1,0 @@
-Confusion Matrix:
-[[8991    4]
- [  62 9281]]
