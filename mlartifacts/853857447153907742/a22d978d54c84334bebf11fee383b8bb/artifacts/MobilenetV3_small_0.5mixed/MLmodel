@@ -1,0 +1,18 @@
+artifact_path: MobilenetV3_small_0.5mixed
+flavors:
+  python_function:
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.11.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.1.2
+mlflow_version: 2.4.1
+model_uuid: 8cc0775c8b484d12980757cca098dfd5
+run_id: a22d978d54c84334bebf11fee383b8bb
+utc_time_created: '2024-01-20 00:12:44.441662'
