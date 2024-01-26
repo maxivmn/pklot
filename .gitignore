@@ -132,7 +132,9 @@ dmypy.json
 data/*
 models/*.sav
 mlruns
+runs
 models/*
+datasets
 
 #config file has sensitive data
 .mlflow_uri
