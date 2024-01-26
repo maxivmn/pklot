@@ -38,8 +38,14 @@ with col1:
     uploaded_file = st.file_uploader("Choose an image")
 
     if uploaded_file is not None:
-        img = Image.open(uploaded_file)
-        st.image(img, width=500)
+        file_bytes = uploaded_file.read()
+        # Convert the bytes to a numpy array
+        nparr = np.frombuffer(file_bytes, np.uint8)
+        # Read the image using OpenCV
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        #img = Image.open(uploaded_file)
+        st.image(image, width=500)
+        
 
 
 with col2:
@@ -63,8 +69,12 @@ with col2:
         # Check if the button is clicked
         if button_clicked:
             button_placeholder.empty()
-            st.write("Button clicked!")
-            # Perform actions or computations here  
+            #st.write("Button clicked!")
+            #image_path ='./data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.jpg'
+            #image = cv2.imread(image_path)
+            image_new, result = run_prediction_classi(image)
+            st.image(image_new, width=500)
+            
     else:
         st.text('Upload image to analyze')
 
