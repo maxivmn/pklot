@@ -25,7 +25,7 @@ from modeling.predict_pklot import * # this doesn't work. I don't know why.
 st.set_page_config(page_title='ParkAI', layout='wide',
                 #    initial_sidebar_state=st.session_state.get('sidebar_state', 'collapsed'),
 )
-st.image("./images/ParkAI_2.png",use_column_width=True)
+st.image("./images/ParkAI_9.png",use_column_width=True)
 #st.snow()
 st.title('Try it out yourself')
 
@@ -35,9 +35,11 @@ col1, col2 = st.columns(2)
 
 with col1:
     # To-Do: Being able to upload multiple images and then to choose multiple of them.
+    file_placeholder = st.empty()
     uploaded_file = st.file_uploader("Choose an image")
 
     if uploaded_file is not None:
+        file_placeholder = st.empty()
         file_bytes = uploaded_file.read()
         # Convert the bytes to a numpy array
         nparr = np.frombuffer(file_bytes, np.uint8)
@@ -50,6 +52,7 @@ with col1:
 
 with col2:
     # Create a placeholder for the button
+    st.write("")
     button_placeholder = st.empty()
     st.markdown(
     """
