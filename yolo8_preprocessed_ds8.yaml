@@ -1,0 +1,5 @@
+train: ../ds8/train/images
+val: ../ds8/val/images
+
+nc: 2
+names: ['empty', 'car']

@@ -136,5 +136,8 @@ models/
 runs/
 datasets/
 
+yolov8*.pt
+YOLOv8/
+
 #config file has sensitive data
 .mlflow_uri
