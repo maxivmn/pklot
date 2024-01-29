@@ -56,6 +56,10 @@ def export_to_xml(prediction, display_output=False, testing=False, write_xml=Tru
     
     # Convert the XML structure to a string
     xml_string = ET.tostring(root, encoding='unicode')
+    
+    with open('/Users/margarita.samuseva/neuefische/pklot/modeling/output.xml', 'w') as f:
+        f.write(xml_string)
+    
     if display_output:
         print("XML content generated successfully.")
         return xml_string
@@ -63,6 +67,7 @@ def export_to_xml(prediction, display_output=False, testing=False, write_xml=Tru
         return contours, labels, xml_string
     else:
         return xml_string
+    
 
 ## Helper functions.
 
@@ -98,12 +103,72 @@ def remove_boxes_from_xml(xml_string, ids_to_remove):
     # Return the modified XML as a string
     return ET.tostring(root, encoding='unicode')
 
+def show_images_with_boxes(image, xml_string):
+    '''
+    Reads in an XML with predefined structure.
+    The XML contains the coordinates of the boxes.
+    OUTPUT:
+    Image with not classified boxes on top.
+    '''
+
+    # Read XML-file
+    #tree = ET.parse(xml_path)
+    #root = tree.getroot()
+    
+    # Read XML-structured string.
+    # XML-String analysieren
+    root = ET.fromstring(xml_string)
+
+    # Kopiere das Originalbild für die Anzeige der Boxen
+    image_with_boxes = image.copy()
+
+    # Iteriere durch jede Box im XML
+    for space in root.iter('space'):
+        space_id = int(space.attrib['id'])
+
+        # Extrahiere Koordinaten und Winkel aus XML (Konturkoordinaten)
+        contour_points = []
+        for point in space.iter('point'):
+            x = int(point.attrib['x'])
+            y = int(point.attrib['y'])
+            contour_points.append((x, y))
+
+        # Konvertiere die Konturpunkte in ein NumPy-Array
+        contour_np = np.array(contour_points, dtype=np.int32)
+        contour_np = contour_np.reshape((-1, 1, 2))
+
+        # Zeichne ein Rechteck um die Konturpunkte auf dem Bild mit Boxen
+        cv2.polylines(image_with_boxes, [contour_np], isClosed=True, color=(0, 255, 0), thickness=2)
+
+        # Extrahiere Zentrum aus XML
+        center_x = float(space.find('./rotatedRect/center').attrib['x'])
+        center_y = float(space.find('./rotatedRect/center').attrib['y'])
+        center = (int(center_x), int(center_y))
+
+        # Beschrifte das Bild mit der Box-ID und schwarzem Hintergrund
+        text = str(space_id)
+        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)[0]
+        text_padding = 3
+        background_size = (text_size[0] + 2 * text_padding, text_size[1] + 2 * text_padding)
+        text_x = center[0] - background_size[0] // 2
+        text_y = center[1] - 5
+        cv2.rectangle(image_with_boxes, (text_x, text_y - text_size[1] - text_padding),
+                      (text_x + background_size[0], text_y + text_size[1] + text_padding), (0, 0, 0), -1)
+        cv2.putText(image_with_boxes, text, (text_x + text_padding, text_y + text_size[1] - text_padding),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2, cv2.LINE_AA)
+
+    # Anzeigen des Bildes mit den eingezeichneten Boxen im Output
+    # plt.imshow(cv2.cvtColor(image_with_boxes, cv2.COLOR_BGR2RGB))
+    # plt.axis('off')
+    # plt.show()
+    return image_with_boxes
 
 
 def run_detection(image):
         
     prediction = detect_boxes(image)
     xml_str = export_to_xml(prediction)
+    
     return prediction, xml_str
 
 if __name__ == "__main__":
