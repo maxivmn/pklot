@@ -123,7 +123,7 @@ def visualize_result(image, cropped_images, result ): # TO-DO: Input original im
         contour_np = box_info['contour']
 
         if space_id in occupied_space_ids:
-            cv2.polylines(image, [contour_np], isClosed=True, color=(255, 0, 0), thickness=2)
+            cv2.polylines(image, [contour_np], isClosed=True, color=(0, 0, 255), thickness=2)
         elif space_id in empty_space_ids:
             cv2.polylines(image, [contour_np], isClosed=True, color=(0, 255, 0), thickness=2)
 
