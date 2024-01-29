@@ -25,9 +25,6 @@ from torch.utils.data import Dataset
 warnings.filterwarnings("ignore")
 
 
-def preprocessor_test(image):
-    pass
-
 def show_images_with_boxes(image, xml_path):
     '''
     Reads in an XML with predefined structure.
@@ -36,9 +33,12 @@ def show_images_with_boxes(image, xml_path):
     Image with not classified boxes on top.
     '''
 
-    # XML-Datei analysieren
+    # Read XML-file
     tree = ET.parse(xml_path)
     root = tree.getroot()
+    
+    # Read XML-structured string.
+    #root = ET.fromstring(xml_path)
 
     # Kopiere das Originalbild für die Anzeige der Boxen
     image_with_boxes = image.copy()
@@ -82,22 +82,24 @@ def show_images_with_boxes(image, xml_path):
     plt.axis('off')
     plt.show()
 
-def crop_images(image, xml_path):
+def crop_images(image, xml_string):
     '''
     Reads the attributes of detected bounding boxes from the xml.
     Cuts the bounding boxes from the image.
     OUTPUT:
-    to_classify - list with coordinates of the boxes
+    to_classify - list of cropped images.
     image_with_boxes - original image with boxes on top. 
     
     '''
 
     # XML-Datei analysieren
-    tree = ET.parse(xml_path)
-    root = tree.getroot()
+    # tree = ET.parse(xml_path)
+    # root = tree.getroot()
+    
+    root = ET.fromstring(xml_string)
 
     # Leeres Array für die ausgeschnittenen Boxen
-    to_classify = []
+    cropped_images = []
 
     # Kopiere das Originalbild für die Anzeige der Boxen
     image_with_boxes = image.copy()
@@ -143,7 +145,7 @@ def crop_images(image, xml_path):
         box_image = rotated_image[rect[1]:rect[1] + rect[3], rect[0]:rect[0] + rect[2]]
 
         # Füge die ausgeschnittene Box zur Liste hinzu
-        to_classify.append({'image': box_image, 'id': space_id, 'contour': contour_np})
+        cropped_images.append({'image': box_image, 'id': space_id, 'contour': contour_np})
         
         # Beschrifte das Bild mit der Box-ID
         cv2.putText(image_with_boxes, str(space_id), (rect[0], rect[1] - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2, cv2.LINE_AA)
@@ -153,12 +155,7 @@ def crop_images(image, xml_path):
     # plt.axis('off')
     # plt.show()
 
-    return to_classify, image_with_boxes
+    return cropped_images, image_with_boxes
 
-# Helper functions
-def create_xml(image):
-    ''' 
-    Creates an XML file with recognized boxes.
-    '''
-    pass
+
 

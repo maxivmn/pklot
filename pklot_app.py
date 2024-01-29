@@ -19,13 +19,14 @@ import shutil
 import seaborn as sns
 import cv2
 from PIL import Image
-from modeling.predict_pklot import * # this doesn't work. I don't know why. 
+from modeling.predict_pklot import * 
+from modeling.detect_pklot import *
 
 
 st.set_page_config(page_title='ParkAI', layout='wide',
                 #    initial_sidebar_state=st.session_state.get('sidebar_state', 'collapsed'),
 )
-st.image("./images/ParkAI_9.png",use_column_width=True)
+st.image("./images/ParkAI_9_transp.png",use_column_width=True)
 #st.snow()
 st.title('Try it out yourself')
 
@@ -75,8 +76,14 @@ with col2:
             #st.write("Button clicked!")
             #image_path ='./data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.jpg'
             #image = cv2.imread(image_path)
-            image_new, result = run_prediction_classi(image)
+            # Detection
+            prediction = detect_boxes(image)
+            xml_string = export_to_xml(prediction)
+            
+            #Classification
+            image_new, result = run_prediction_classi(image, xml_string)
             st.image(image_new, width=500)
+            st.write(result)
             
     else:
         st.text('Upload image to analyze')

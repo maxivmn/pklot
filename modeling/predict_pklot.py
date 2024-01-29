@@ -24,7 +24,9 @@ from torch.utils.data import Dataset
 
 warnings.filterwarnings("ignore")
 
+from .detect_pklot import *
 from .feature_eng_pklot import *
+from .config import *
 
 app = FastAPI()
      
@@ -54,14 +56,14 @@ def load_model(model_path):
 
     return loaded_model
 
-def ensemble_models(cropped_images, model_paths):
+def ensemble_and_classify(cropped_images, model_paths): # TO-DO: Umbenennen. Predict in Namen reinbrignen.
     num_parking_spaces = len(cropped_images)
 
     # Laden Sie die drei Modelle
     loaded_models = [load_model(model_path) for model_path in model_paths]
 
     data_transform = transforms.Compose([
-        transforms.Resize((128, 128), interpolation=Image.BICUBIC),
+        transforms.Resize((INPUT_HEIGHT, INPUT_WIDTH), interpolation=Image.BICUBIC),
         transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
@@ -109,13 +111,11 @@ def ensemble_models(cropped_images, model_paths):
     return num_parking_spaces, num_empty_spaces, num_occupied_spaces, empty_space_ids, occupied_space_ids
 
 
-def visualize_result(image_with_boxes, cropped_images, result ):
+def visualize_result(image, cropped_images, result ): # TO-DO: Input original image without boxes.
     '''
     Visualization of the boxes inclusively the predicted class
     '''
     # Visualize results with marked IDs
-    ## Question do I need the image with boxes here?
-    image = image_with_boxes.copy()
     num_parking_spaces, num_empty_spaces, num_occupied_spaces, empty_space_ids, occupied_space_ids = result
 
     for box_info in cropped_images:
@@ -123,7 +123,7 @@ def visualize_result(image_with_boxes, cropped_images, result ):
         contour_np = box_info['contour']
 
         if space_id in occupied_space_ids:
-            cv2.polylines(image, [contour_np], isClosed=True, color=(0, 0, 255), thickness=2)
+            cv2.polylines(image, [contour_np], isClosed=True, color=(255, 0, 0), thickness=2)
         elif space_id in empty_space_ids:
             cv2.polylines(image, [contour_np], isClosed=True, color=(0, 255, 0), thickness=2)
 
@@ -133,15 +133,17 @@ def visualize_result(image_with_boxes, cropped_images, result ):
     return image
 
     
-def run_prediction_classi(image):
+def run_prediction_classi(image, xml_string):
     model_paths = ['/Users/margarita.samuseva/neuefische/pklot/models/resnet18_sunny_datasets.pth', '/Users/margarita.samuseva/neuefische/pklot/models/squeezenet1_sunny_datasets.pth']
-    xml_path = '/Users/margarita.samuseva/neuefische/pklot/data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.xml'
-    cropped_images, image_with_boxes = crop_images(image, xml_path)
-    result = ensemble_models(cropped_images, model_paths)
-    image = visualize_result(image_with_boxes, cropped_images, result)
-    return image, result
+    #xml_path = '/Users/margarita.samuseva/neuefische/pklot/data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.xml'
+    cropped_images, image_with_boxes = crop_images(image, xml_string)
+    result = ensemble_and_classify(cropped_images, model_paths)
+    image_with_boxes_classified = visualize_result(image, cropped_images, result)
+    return image_with_boxes_classified, result
 
 if __name__ == "__main__":
-    image_path ='/Users/margarita.samuseva/neuefische/pklot/data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.jpg'
+    image_path ='/Users/margarita.samuseva/neuefische/pklot/data/PKLot/PKLot/UFPR05/Cloudy/2013-03-15/2013-03-15_08_30_02.jpg'
     image = cv2.imread(image_path)
-    image_new, result = run_prediction_classi(image)
+    prediction = detect_boxes(image)
+    xml_string = export_to_xml(prediction)
+    image_new, result = run_prediction_classi(image, xml_string)
