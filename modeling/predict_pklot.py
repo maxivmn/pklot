@@ -144,6 +144,7 @@ def run_prediction_classi(image, xml_string):
 if __name__ == "__main__":
     image_path ='/Users/margarita.samuseva/neuefische/pklot/data/PKLot/PKLot/UFPR05/Cloudy/2013-03-15/2013-03-15_08_30_02.jpg'
     image = cv2.imread(image_path)
+    prediction = []
     prediction = detect_boxes(image)
     xml_string = export_to_xml(prediction)
     image_new, result = run_prediction_classi(image, xml_string)
