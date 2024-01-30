@@ -57,8 +57,9 @@ def export_to_xml(prediction, display_output=False, testing=False, write_xml=Tru
     # Convert the XML structure to a string
     xml_string = ET.tostring(root, encoding='unicode')
     
-    with open('/Users/margarita.samuseva/neuefische/pklot/modeling/output.xml', 'w') as f:
-        f.write(xml_string)
+    #Save the xml string to a file
+    # with open('/Users/margarita.samuseva/neuefische/pklot/modeling/output.xml', 'w') as f:
+    #     f.write(xml_string)
     
     if display_output:
         print("XML content generated successfully.")

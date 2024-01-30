@@ -99,5 +99,13 @@ def crop_images(image, xml_string):
 
     return cropped_images, image_with_boxes
 
-
-
+def create_xml_string(xml_path):
+    
+    # Analyze XML-file
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    
+    # Convert the root element to a string
+    xml_string = ET.tostring(root, encoding='utf8', method='xml').decode()
+    
+    return xml_string
