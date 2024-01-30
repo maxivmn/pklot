@@ -138,7 +138,7 @@ def show_images_with_boxes(image, xml_string):
         contour_np = contour_np.reshape((-1, 1, 2))
 
         # Zeichne ein Rechteck um die Konturpunkte auf dem Bild mit Boxen
-        cv2.polylines(image_with_boxes, [contour_np], isClosed=True, color=(0, 255, 0), thickness=2)
+        cv2.polylines(image_with_boxes, [contour_np], isClosed=True, color=(255, 0, 0), thickness=2)
 
         # Extrahiere Zentrum aus XML
         center_x = float(space.find('./rotatedRect/center').attrib['x'])

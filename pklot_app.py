@@ -45,9 +45,17 @@ if 'file' not in st.session_state:
 st.title('Try it out yourself')
 
 # To-Do: Being able to upload multiple images and then to choose multiple of them.
-file_placeholder = st.empty()
-uploaded_file = file_placeholder.file_uploader("Choose an image")
-if uploaded_file != st.session_state.file:
+st.write('Do you want to upload a new parkling area or use an already saved one?')
+file_placeholder_n = st.empty()
+file_placeholder_o = st.empty()
+col1, col2 = st.columns(2)
+with col1:
+    uploaded_file_n = file_placeholder_n.file_uploader("Upload new")
+with col2:
+    uploaded_file_o = file_placeholder_o.file_uploader("Upload existing")
+    
+# Resetting the session state if a new file is uploaded.    
+if uploaded_file_n != st.session_state.file:
     st.session_state.clear()
     if 'button_clicked' not in st.session_state:
         st.session_state.button_clicked = False
@@ -57,12 +65,12 @@ if uploaded_file != st.session_state.file:
         st.session_state.remove = False
     if 'file' not in st.session_state:
         st.session_state.file = ''
-    st.session_state.file = uploaded_file
+    st.session_state.file = uploaded_file_n
 
 
-if uploaded_file is not None:
+if uploaded_file_n is not None:
     file_placeholder = st.empty()
-    file_bytes = uploaded_file.read()
+    file_bytes = uploaded_file_n.read()
     # Convert the bytes to a numpy array
     nparr = np.frombuffer(file_bytes, np.uint8)
     # Read the image using OpenCV
@@ -88,10 +96,12 @@ if uploaded_file is not None:
         prediction = detect_boxes(image)
         xml_string = export_to_xml(prediction)
         image_with_boxes = show_images_with_boxes(image, xml_string)
+        image_with_removed_boxes = []
         image_placeholder_c = st.empty()
         image_placeholder_c.image(cv2.cvtColor(image_with_boxes, cv2.COLOR_BGR2RGB), caption = 'Detected boxes')
         
-        st.write('Are the detected parking places ok or do some boxes need to be removed?')
+        question_placeholder = st.empty()
+        question_placeholder.write('Are the detected parking places ok or do some boxes need to be removed?')
         
         # Create two buttons.
         col1, col2 = st.columns(2)
@@ -107,27 +117,59 @@ if uploaded_file is not None:
         with col2:
             button_placeholder_c = st.empty()
             remove = button_placeholder_c.button("Remove")
+            text_placeholder = st.empty()
+            box_field = text_placeholder.text_input("Box numbers to be removed", placeholder="12, 45")
             if remove:
                 st.session_state.remove = True
-        
-        
-        # 2. Correction
-        # while remove:
-        #     pass
             
+        # 2. Correction
+        if remove:
+            image_placeholder_c.empty()
+            box_nums = [num.strip() for num in box_field.split(',')]
+            box_nums_int = [int(num) for num in box_nums]
+
+            # If it's the first time removing boxes, use the original XML string.
+            # Otherwise, use the XML string from the last update.
+            if 'updated_xml_string' not in st.session_state:
+                st.session_state.updated_xml_string = xml_string
+
+            box_removed_xml_string= remove_boxes_from_xml(st.session_state.updated_xml_string, box_nums_int)
+            # Store the updated XML string in the session state for use in future updates
+            st.session_state.updated_xml_string = box_removed_xml_string
+
+            image_with_removed_boxes = show_images_with_boxes(image, box_removed_xml_string)
+            image_placeholder_c = st.empty()
+            image_placeholder_c.image(cv2.cvtColor(image_with_removed_boxes, cv2.COLOR_BGR2RGB), caption = 'with deleted boxes', use_column_width=True)
+        
+                
         # 3. Classification
         if st.session_state.correct:
-            #button_placeholder_c.empty()
-            #button_placeholder_p.empty()
+            st.session_state.remove = False
+            #button_placeholder_d.empty()
+            button_placeholder_c.empty()
+            button_placeholder_p.empty()
+            question_placeholder.empty()
             #image_placeholder_c.empty()
+            text_placeholder.empty()
             
             #Classification
             #st.write('hello')
-            image_out, result = run_prediction_classi(image_with_boxes, xml_string)
+            # Useage of images with boxes as input in order to have the ids plotted. 
+            if image_with_removed_boxes != []:
+                input = image_with_removed_boxes
+            else:
+                input = image_with_boxes#
+            
+            image_out, result = run_prediction_classi(input, xml_string)
             st.image(cv2.cvtColor(image_out, cv2.COLOR_BGR2RGB), caption = 'Classified boxes')
             st.write(f'Number of parking spaces: {result[0]}')
             st.write(f'Number of empty spaces:: {result[1]}')
             st.write(f'Number of occupied spaces:: {result[2]}')
-        
+            
+            # TO-DO: Save the map in a specified path.
+            
 
+        
+# if uploaded_file_o is not None:
+#     pass
 
