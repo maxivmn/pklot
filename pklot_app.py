@@ -1,7 +1,5 @@
 ## To-DO:
-# read data from a link
-# predict. Write function apply model.
-# plot an answer.
+# - introduce error handling e.g. check all inputs for correctness. No . in id-List. Only ,
 
 import streamlit as st
 import os
@@ -26,6 +24,10 @@ st.set_page_config(page_title='ParkAI', layout='wide',
                 #    initial_sidebar_state=st.session_state.get('sidebar_state', 'collapsed'),
 )
 st.image("./images/ParkAI_9_transp.png",use_column_width=True)
+st.title('Try it out yourself')
+
+# To-Do: Being able to upload multiple images and then to choose multiple of them.
+st.write('Do you want to upload a new parkling lot or use an already saved one?')
 
 
 # Declaration of session state
@@ -47,12 +49,6 @@ if 'old_trigger' not in st.session_state:
     st.session_state.old_trigger = False
 
 
-st.title('Try it out yourself')
-
-# To-Do: Being able to upload multiple images and then to choose multiple of them.
-st.write('Do you want to upload a new parkling lot or use an already saved one?')
-
-
 col1, col2 = st.columns(2)
 with col1:
     file_placeholder_new = st.empty()
@@ -66,15 +62,9 @@ with col2:
 
 button_placeholder_d = st.empty()
 image_placeholder_c = st.empty()
-# question_placeholder = st.empty()
-# col1, col2 = st.columns(2)
-# # Add a button to the first column
-# with col1:
-#     button_placeholder_p = st.empty()
 
 # Resetting the session state if a new file is uploaded.    
 if (uploaded_file_new != st.session_state.file_new) | (uploaded_file_old != st.session_state.file_old):
-    
     #Resetting the session state
     st.session_state.button_clicked = False
     st.session_state.correct = False
@@ -100,23 +90,23 @@ if (uploaded_file_new != st.session_state.file_new) | (uploaded_file_old != st.s
         st.session_state.file_old = uploaded_file_old
         st.session_state.new_trigger = False
         st.session_state.old_trigger = True
-    
+ 
+ 
+   
 
-
-###############################
-###    If new parking lot   ###
-###############################  
+#######################################
+#######    If new parking lot   #######
+#######################################
 if st.session_state.new_trigger is True:
     
-    # New path
+     # Reset output from old parking lot
     file_placeholder_new = st.empty()
     file_bytes = uploaded_file_new.read()
+    
     # Convert the bytes to a numpy array
     nparr = np.frombuffer(file_bytes, np.uint8)
     # Read the image using OpenCV
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #img = Image.open(uploaded_file)
-    
     image_placeholder.image(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), caption = 'Uploaded image', width=500)
     
     button_clicked = button_placeholder_d.button("Detect")
@@ -124,15 +114,9 @@ if st.session_state.new_trigger is True:
         st.session_state.button_clicked = True
     # Check if the button is clicked
     if st.session_state.button_clicked:
-        
-        #button_placeholder.empty()
-        #st.write("Button clicked!")
-        #image_path ='./data/PKLot/PKLot/PUCPR/Cloudy/2012-09-12/2012-09-12_06_05_16.jpg'
-        #image = cv2.imread(image_path)
-        
-        
+             
+                
         # 1. Detection
-
         prediction = detect_boxes(image)
         xml_string_det = export_to_xml(prediction)
         if 'xml_string_det' not in st.session_state:
@@ -164,6 +148,7 @@ if st.session_state.new_trigger is True:
             box_field = text_placeholder.text_input("Box numbers to be removed", placeholder="12, 45")
             if remove:
                 st.session_state.remove = True
+           
             
         # 2. Correction
         if remove:
@@ -213,7 +198,7 @@ if st.session_state.new_trigger is True:
             st.write(f'Number of occupied spaces: {result[2]}')
             
             current_datetime = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            clicked = st.download_button(label='Download Boxmap for Parking Lot', data= xml_string, file_name=f'BoxMap_{current_datetime}.xml')
+            clicked = st.download_button(label='Download BoxMap for Parking Lot', data= xml_string, file_name=f'BoxMap_{current_datetime}.xml')
             
             # TO-DO: Save the map in a specified path.
             
@@ -221,20 +206,19 @@ if st.session_state.new_trigger is True:
 
         
        
-###############################
-###    If new parking lot   ###
-###############################
+#######################################
+#######    If old parking lot   #######
+#######################################
 if st.session_state.old_trigger is True:
-    # Reset all history states connected to new path
+    # Reset output from new parking lot
     image_placeholder.empty()
     button_placeholder_d.empty()
     
+    # Convert the bytes to a numpy array
     file_bytes = uploaded_file_old.read()
     nparr = np.frombuffer(file_bytes, np.uint8)
     # Read the image using OpenCV
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #img = Image.open(uploaded_file)
-    
     image_placeholder_old.image(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), caption = 'Uploaded image', width=500)
     
     with col2:
