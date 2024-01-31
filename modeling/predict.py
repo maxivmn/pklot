@@ -1,5 +1,6 @@
 import sys
 import os
+import io
 from fastapi import FastAPI
 from PIL import Image
 from ultralytics import YOLO
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 
 warnings.filterwarnings("ignore")
 
-from .feature_eng_pklot import *
+from feature_eng_pklot import *
 
 app = FastAPI()
 
@@ -49,7 +50,7 @@ def yolo_predict(yolo_run, img_path):
     return pred
 
 #------------------------------------------------------------------
-def show_predict(yolo_pred_obj):
+def show_predict(yolo_pred_obj, image_width, image_height):
     ''' 
     Show the output image of the yolo prediction with the bounding boxes
     INPUT :
@@ -58,13 +59,31 @@ def show_predict(yolo_pred_obj):
     OUTPUT :
         # Just visualize the predicted image
     '''
+    num_images = len(yolo_pred_obj)  # Number of images
+    canvas_width = image_width
+    canvas_height = image_height * num_images
+
+    # Create a blank canvas
+    canvas = Image.new('RGB', (canvas_width, canvas_height))
+
     # Show the results for one image
+    # Loop through your predictions and draw each image on the canvas
+    y_position = 0
     for r in yolo_pred_obj:
         im_array = r.plot(line_width=1)  # plot a BGR numpy array of predictions
         im = Image.fromarray(im_array[..., ::-1])  # RGB PIL image
-        plt.figure(figsize=(15,10))
-        plt.axis('off')
-        plt.imshow(im)
+
+        # Paste the current image onto the canvas
+        canvas.paste(im, (0, y_position))
+        y_position += image_height  # Move the position for the next image
+    
+    # Save the final canvas to a bytes buffer
+    img_byte_arr = io.BytesIO()
+    canvas.save(img_byte_arr, format='JPEG')
+    img_byte_arr.seek(0)
+
+    return img_byte_arr
+
 
 
 #------------------------------------------------------------------

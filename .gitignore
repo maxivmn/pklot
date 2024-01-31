@@ -136,3 +136,8 @@ models/*
 
 #config file has sensitive data
 .mlflow_uri
+
+
+# Thisal additions
+runs/
+models/

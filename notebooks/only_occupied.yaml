@@ -1,0 +1,6 @@
+train: ../PKLot/PKLot_only_occupied_original/PUC/Sunny/train/images
+val: ../PKLot/PKLot_only_occupied_original/PUC/Sunny/val/images
+test: ../PKLot/PKLot_only_occupied_original/PUC/Sunny/test/images
+
+nc: 1
+names: ['occupied_lot']
