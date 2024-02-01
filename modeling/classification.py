@@ -1,34 +1,17 @@
-import sys
-from fastapi import FastAPI
-from sklearn.metrics import mean_squared_error
 import warnings
-import mlflow
-from mlflow.sklearn import load_model
-import xml.etree.ElementTree as ET
 import cv2
 import numpy as np
-import os
-from torch.utils.data import DataLoader
 from torchvision import models, transforms
 from torch import nn
 import torch
 from PIL import Image
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-import torch
-import torch.nn as nn
-from torchvision import models, transforms
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset
 
 warnings.filterwarnings("ignore")
 
-from .detect_pklot import *
-from .feature_eng_pklot import *
+from .detection import *
+from .feature_eng_classi import *
 from .config import *
 
-app = FastAPI()
      
 # Helper functions    
 def load_model(model_path):

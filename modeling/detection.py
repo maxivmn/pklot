@@ -1,14 +1,8 @@
 from ultralytics import YOLO
 import cv2
-import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
 import numpy as np
 
-import torch
-import torch.nn as nn
-from torchvision import transforms, models
-from PIL import Image
-import io
 
 def detect_boxes(image):
     # do the prediction with confidence level of maximum 0.2; iou allows for intersection of predicted boxes (lower values are stricter)
